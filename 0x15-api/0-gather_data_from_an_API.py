@@ -1,14 +1,26 @@
 #!/usr/bin/python3
-"""Returns to-do list information for a given employee ID."""
+"""
+returns info about employees TODO list progress using
+RESTAPI
+"""
 import requests
 import sys
 
-if __name__ == "__main__":
-    url = "https://jsonplaceholder.typicode.com/"
-    user = requests.get(url + "users/{}".format(sys.argv[1])).json()
-    todos = requests.get(url + "todos", params={"userId": sys.argv[1]}).json()
 
-    completed = [t.get("title") for t in todos if t.get("completed") is True]
-    print("Employee {} is done with tasks({}/{}):".format(
-        user.get("name"), len(completed), len(todos)))
-    [print("\t {}".format(c)) for c in completed]
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        userid = sys.argv[1]
+
+        api_url = 'https://jsonplaceholder.typicode.com/'
+        user_url = api_url + 'users/{}'.format(userid)
+        user_todos_url = api_url + 'users/{}/todos'.format(userid)
+
+        # Requesrs te data
+        user = requests.get(user_url).json()
+        todos = requests.get(user_todos_url).json()
+
+        titles = [todo.get('title') for todo in todos if todo.get('completed')]
+
+        print("Employee {} is done with tasks({}/{}):".format(
+            user.get('name'), len(titles), len(todos)))
+        print('\n'.join(['\t {}'.format(title) for title in titles]))
