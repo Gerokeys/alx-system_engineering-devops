@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 """
-Exports a user TODO ;ist as a CSV  file
+Converts a user TODO list as to json data
 """
+import json
 import requests
 import sys
 
@@ -18,11 +19,13 @@ if __name__ == "__main__":
         user = requests.get(user_url).json()
         todos = requests.get(user_todos_url).json()
 
-        csv_data = ['"{}","{}","{}","{}"'.format(
-            user_id,
-            user.get('username'),
-            todo.get('completed'),
-            todo.get('title')) for todo in todos]
+        json_data = [
+                {
+                    "task": todo.get('title'),
+                    "completed": todo.get('completed'),
+                    "username": user.get('username')
+                }
+                for todo in todos]
 
-        with open('{}.csv'.format(user_id), 'w') as csvf:
-            csvf.write('\n'.join(csv_data))
+        with open('{}.json'.format(user_id), 'w') as jsonf:
+            json.dump({user_id: json_data}, jsonf)
